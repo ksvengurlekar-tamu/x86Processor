@@ -1,0 +1,54 @@
+                            | # Main program
+0x000: 30f49001000000000000 | irmovq $400, %rsp
+0x00a: 30f00200000000000000 | irmovq $2, %rax  # Load the size of each row/column of the matrices into %rax
+0x014: 30f31000000000000000 | irmovq $16, %rbx  # Load the total size of each matrix into %rbx
+                            | 
+                            | # Initialize the first matrix
+0x01e: 30f80100000000000000 | irmovq $1, %r8
+0x028: 40840000000000000000 | rmmovq %r8, 0(%rsp)
+0x032: 30f80200000000000000 | irmovq $2, %r8
+0x03c: 40840800000000000000 | rmmovq %r8, 8(%rsp)
+0x046: 30f80300000000000000 | irmovq $3, %r8
+0x050: 40841000000000000000 | rmmovq %r8, 16(%rsp)
+0x05a: 30f80400000000000000 | irmovq $4, %r8
+0x064: 40841800000000000000 | rmmovq %r8, 24(%rsp)
+                            | 
+                            | # Initialize the second matrix
+0x06e: 30f80600000000000000 | irmovq $6, %r8
+0x078: 40842000000000000000 | rmmovq %r8, 32(%rsp)
+0x082: 30f80900000000000000 | irmovq $9, %r8
+0x08c: 40842800000000000000 | rmmovq %r8, 40(%rsp)
+0x096: 30f80c00000000000000 | irmovq $12, %r8
+0x0a0: 40843000000000000000 | rmmovq %r8, 48(%rsp)
+0x0aa: 30f80f00000000000000 | irmovq $15, %r8
+0x0b4: 40843800000000000000 | rmmovq %r8, 56(%rsp)
+                            | 
+                            | # Load the addresses of the matrices into registers
+0x0be: 30f20000000000000000 | irmovq $0, %rdx
+0x0c8: 6042                 | addq %rsp, %rdx  # Calculate the address of the first matrix
+0x0ca: 30f12000000000000000 | irmovq $32, %rcx
+0x0d4: 6041                 | addq %rsp, %rcx  # Calculate the address of the second matrix
+0x0d6: 30f50000000000000000 | irmovq $0, %rbp
+0x0e0: 6015                 | addq %rcx, %rbp  # Calculate the address of the result matrix
+0x0e2: 30fa0800000000000000 | irmovq $8, %r10 #stores 8
+0x0ec: 30fb0100000000000000 | irmovq $1, %r11 #stores 1
+                            | 
+                            | # Add the matrices element by element
+0x0f6: 30fc0200000000000000 | irmovq $2, %r12 #stores i
+0x100:                      | add_row:
+0x100: 30fd0200000000000000 |     irmovq $2, %r13 #stores j
+0x10a:                      |     add_column:
+0x10a: 50620000000000000000 |         mrmovq (%rdx), %rsi
+0x114: 60a2                 |         addq %r10, %rdx
+0x116: 50810000000000000000 |         mrmovq (%rcx), %r8
+0x120: 60a1                 |         addq %r10, %rcx
+0x122: 6068                 |         addq %rsi, %r8  # Add the values together
+0x124: 40850000000000000000 |         rmmovq %r8, (%rbp)  # Store the result in the corresponding position of the result matrix
+0x12e: 60a5                 |         addq %r10, %rbp
+0x130: 61bd                 |         subq %r11, %r13
+0x132: 740a01000000000000   |         jne add_column  # Repeat for all columns in the row
+0x13b: 61bc                 |     subq %r11, %r12
+0x13d: 740001000000000000   |     jne add_row  # Repeat for all rows in the matrices
+                            |     
+                            |     
+                            |     

@@ -1,0 +1,58 @@
+0x000:                      | start:
+0x000: 30f49001000000000000 |     irmovq $400, %rsp #initialize rsp
+                            |     # store array in memory (79, 14, 85, 50, 1, 4, 98, 73, 93, 32)
+0x00a: 30f84f00000000000000 |     irmovq $79, %r8
+0x014: a08f                 |     pushq %r8
+0x016: 30f80e00000000000000 |     irmovq $14, %r8
+0x020: 40840800000000000000 |     rmmovq %r8, 8(%rsp)
+0x02a: 30f85500000000000000 |     irmovq $85, %r8
+0x034: 40841000000000000000 |     rmmovq %r8, 16(%rsp)
+0x03e: 30f83200000000000000 |     irmovq $50, %r8
+0x048: 40841800000000000000 |     rmmovq %r8, 24(%rsp)
+0x052: 30f80100000000000000 |     irmovq $1, %r8
+0x05c: 40842000000000000000 |     rmmovq %r8, 32(%rsp)
+0x066: 30f80400000000000000 |     irmovq $4, %r8
+0x070: 40842800000000000000 |     rmmovq %r8, 40(%rsp)
+0x07a: 30f86200000000000000 |     irmovq $98, %r8
+0x084: 40843000000000000000 |     rmmovq %r8, 48(%rsp)
+0x08e: 30f84900000000000000 |     irmovq $73, %r8
+0x098: 40843800000000000000 |     rmmovq %r8, 56(%rsp)
+0x0a2: 30f85d00000000000000 |     irmovq $93, %r8
+0x0ac: 40844000000000000000 |     rmmovq %r8, 64(%rsp)
+0x0b6: 30f82000000000000000 |     irmovq $32, %r8
+0x0c0: 40844800000000000000 |     rmmovq %r8, 72(%rsp)
+0x0ca: 30f20a00000000000000 |     irmovq $10, %rdx  # SIZE OF ARRAY
+                            |     # set %rbp
+0x0d4: 2045                 |     rrmovq %rsp, %rbp
+0x0d6: 30f70800000000000000 |     irmovq $8, %rdi
+0x0e0:                      | outer_loop:
+                            |     # Check if the end of the outer loop has been reached
+0x0e0: 30f10100000000000000 |     irmovq $1, %rcx  # rcx = 1
+0x0ea: 6112                 |     subq %rcx, %rdx  # rdx - 1 # decrement i
+0x0ec: 714801000000000000   |     jle end
+0x0f5: 2026                 |     rrmovq %rdx, %rsi # rsi = size, j
+0x0f7: 2054                 |     rrmovq %rbp, %rsp # set rsp back to beginning
+                            | 
+0x0f9:                      | inner_loop:
+                            |     # Compare adjacent elements and swap if necessary
+0x0f9: b00f                 |     popq %rax # first element in rax
+0x0fb: 6174                 |     subq %rdi, %rsp
+0x0fd: 50340800000000000000 |     mrmovq 8(%rsp), %rbx # second in rbx
+0x107: 2039                 |     rrmovq %rbx, %r9 #cmpq
+0x109: 6109                 |     subq %rax, %r9
+0x10b: 752801000000000000   |     jge not_swap # jump if r9 >= rax (least to greatest)
+0x114: 40040800000000000000 |     rmmovq %rax, 8(%rsp) # swap
+0x11e: 40340000000000000000 |     rmmovq %rbx, (%rsp)
+                            | 
+0x128:                      | not_swap:
+                            |     # Check if the end of the inner loop has been reached
+0x128: 30f10100000000000000 |     irmovq $1, %rcx
+0x132: 6074                 |     addq %rdi, %rsp # increment rsp
+0x134: 6116                 |     subq %rcx, %rsi # decrement j
+0x136: 76f900000000000000   |     jg inner_loop
+0x13f: 70e000000000000000   |     jmp outer_loop
+                            | 
+0x148:                      | end:
+                            |     # End of program
+0x148: 00                   |     halt
+                            |   

@@ -1,0 +1,28 @@
+0x000:                      | main:
+                            | 
+                            |     # program that takes in a number, and caclulates the sum of each
+                            |     # number below it, like factorial but instead of
+                            |     # multiplication we use addition
+0x000: 30f00500000000000000 |     irmovq $5, %rax     # value you want to calculate sum of
+0x00a: 30f30000000000000000 |     irmovq $0, %rbx     # to store the final value
+0x014: 30f10100000000000000 |     irmovq $1, %rcx     # decrementing each time
+                            |    
+                            |    
+0x01e: 30f51000000000000000 |     irmovq $0x10, %rbp # base register
+0x028: 40050800000000000000 |     rmmovq %rax, 0x8(%rbp)  #storing the old value
+                            |     # 8 bytes from the offset of rbp
+                            | 
+0x032:                      | Loop:
+0x032: 50750800000000000000 |     mrmovq 0x8(%rbp), %rdi  #storing that value into register rdi
+0x03c: 6073                 |     addq %rdi, %rbx     #adding the previous value to new value
+0x03e: 6110                 |     subq %rcx, %rax     #subtracting 1 from the start value or next value below
+0x040: 715c00000000000000   |     jle End             # jumps if this number is less than 0
+0x049: 40050800000000000000 |     rmmovq %rax, 0x8(%rbp)      #0 store in memory
+0x053: 703200000000000000   |     jmp Loop            # if not go back to loop
+                            |        
+0x05c:                      | End:
+0x05c: 30f4a000000000000000 |     irmovq $0xa0, %rsp      #sets stack pointer
+0x066: a03f                 |     pushq %rbx, (%rsp)      #stores result in memory
+                            |     # should be in 0x98
+                            | 
+0x068: 00                   |     halt
